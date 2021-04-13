@@ -19,6 +19,9 @@ using namespace std;
 
 class InputEquation
 {
+    private:
+        Double_t x, y, z;
+        TRandom *r = new TRandom();
     public:
         InputEquation () {};
 
@@ -27,6 +30,24 @@ class InputEquation
             return pow(TMath::Sin(x), 2)*y; // dy/dx = f(x,y)
             //return (y*y-x*x)/(y*y+x*x);
         }
+
+        void PlotDifferentialEquation(UInt_t np)	
+        {
+            TCanvas *c = new TCanvas("c", "Graph2D example", 0, 0, 700, 600);
+            TGraph2D *dt = new TGraph2D();
+
+            for (Int_t n = 1; n < np; ++n) 
+            {
+                x = r -> Rndm(n);
+                y = r -> Rndm(n);
+                z = pow(TMath::Sin(x), 2)*y;
+                dt -> SetPoint(n, x, y, z);
+            } 
+
+            gStyle -> SetPalette(55);
+            dt -> Draw("surf1");
+            dt -> SetTitle("Graph of f(x, y); x; y; f(x, y)");
+	    }
 
         virtual ~ InputEquation () {};
 };
@@ -37,6 +58,9 @@ class RK4: public InputEquation
         Double_t x0, y0, xn, yn, n, h;
         Double_t k1, k2, k3, k4, k;
         UInt_t counter;
+        vector<Double_t> x_axis_solution;
+        vector<Double_t> solution_vector;
+        TRandom3 r;
     public:
         RK4 () {};
 
@@ -71,9 +95,15 @@ class RK4: public InputEquation
                 y0 = yn;
                 counter = counter + 1;
 
-                cout << yn << endl;
-
+                solution_vector.push_back(yn);
+            
             } while (counter < n);
+           
+            for (UInt_t i = 0; i < solution_vector.size(); ++i)
+            {
+                cout << solution_vector.at(i) << endl;
+            } 
+        
         }
 
         ~ RK4 () {};
@@ -83,7 +113,10 @@ void RungeKuttaMethod()
 {
     RK4 *obj1 = new RK4();
 
-    obj1 -> InitialConditions(0, 1, 3, 0.6);
+    obj1 -> InitialConditions(0, 1, 100, 0.6);
     obj1 -> StepSize();
     obj1 -> RK4Integrator();
+    
+    InputEquation *obj2 = new InputEquation();
+    obj2 -> PlotDifferentialEquation(10000);
 }
