@@ -8,75 +8,89 @@ using namespace std;
 class ReadingFileVariables
 {
     protected:
-        ifstream inFile;
+        //file variables
+        ifstream inFile1, inFile2;
         string aux_string;
-        int int_numbers_items;
-        float float_numbers_items;
-        double double_numbers_items;
-        vector<int> int_numbers_vector;
-        int counter;
+        //items
+        double numbers_items;
+        string strings_items;
+        //vectors to store elements
+        vector<double> numbers_vector;
+        vector<string> strings_vector;
+        //counters
+        int counter_numbers;
+        int counter_strings;
+    public:
+        ReadingFileVariables() {};
+        virtual ~ ReadingFileVariables() {};
 };
 
 class ReadingFile: public ReadingFileVariables
 {
     public:
-        void SetValuesOpenFile(string);
+        ReadingFile () {};
         
-        void OpenFile()
+        void OpenFileOne(string aux_string)
         {
-            inFile.open(aux_string);
+            inFile1.open(aux_string);
         }
         
-        void CheckForError()
+        void CheckForErrorOne()
         {
-            if(inFile.fail())
+            if(inFile1.fail())
             {
                 cerr << "Error opening the file :(" << endl; //Error message
                 exit(1);
             }
         }
         
-        void ReadTheElementsOfTheFile()
+        void ReadTheElementsOfTheFileNumbers()
         {
-            counter = 0;
+            counter_numbers = 0;
             
-            while (!inFile.eof())
+            while (!inFile1.eof())
             {
-                inFile >> int_numbers_items;
-                int_numbers_vector.push_back(int_numbers_items);
-                ++counter;
+                inFile1 >> numbers_items;
+                numbers_vector.push_back(numbers_items);
+                ++counter_numbers;
+
+                //inFile1 >> strings_items;
+                //strings_vector.push_back(strings_items);
+                //++counter_strings;
             }
 
-            cout << counter << " items found!" << endl;
-
+            cout << counter_numbers << " Number items found!" << endl;  
+            //cout << counter_strings << " String items found!" << endl;
         }
-        
-        void ShowTheElementsOfTheFile()
+
+        void ShowTheElementsOfTheFileNumbers()
         {
-            for (int i = 0; i < int_numbers_vector.size(); ++i)
+            for (int i = 0; i < numbers_vector.size(); ++i)
             {
-                cout << int_numbers_vector[i] << endl;
+                cout << numbers_vector.at(i) << endl;
             }
-        }
-        
-        void CloseFile(){inFile.close();}
-};
 
-void ReadingFile::SetValuesOpenFile (string aux)
-{
-    aux_string = aux;
-}
+            //for (int i = 0; i < strings_vector.size(); ++i)
+            //{
+                //cout << strings_vector.at(i) << endl;
+            //}
+        }
+
+        void CloseFileOne(){inFile1.close();}
+
+        ~ ReadingFile () {};
+};
 
 int main()
 {
-    ReadingFile File1;
+    ReadingFile *File1 = new ReadingFile();
     string NameOfFile = "reading.txt"; //Name of our data set that is located in our local storage drive
 
-    File1.SetValuesOpenFile(NameOfFile);File1.OpenFile();
-    File1.CheckForError();
-    File1.ReadTheElementsOfTheFile();
-    File1.ShowTheElementsOfTheFile();
-    File1.CloseFile();
+    File1 -> OpenFileOne(NameOfFile);
+    File1 -> CheckForErrorOne();
+    File1 -> ReadTheElementsOfTheFileNumbers();
+    File1 -> ShowTheElementsOfTheFileNumbers();
+    File1 -> CloseFileOne();
 
     return 0;
 }
